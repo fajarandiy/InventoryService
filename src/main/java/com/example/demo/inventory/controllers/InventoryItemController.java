@@ -1,5 +1,7 @@
 package com.example.demo.inventory.controllers;
 
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +32,36 @@ public class InventoryItemController {
 	}
 	
 	@PostMapping("/restock")
-	public Boolean restock(@Valid @RequestBody InventoryItem obj) {
-		repo.findById(obj.getId());
+	public Boolean restock(@Valid @RequestBody Map<String, Object> obj) {
+		InventoryItem invItemObj = new InventoryItem();
+		String productId =   (String) obj.get("productId");
+		String inventoryId =   (String) obj.get("inventoryId");
+		invItemObj = repo.findItem(productId, inventoryId);
 		
+		String current_stock = invItemObj.getStock();
+		String add_stock = (String) obj.get("addStock");
+		int new_stock = Integer.valueOf(current_stock) + Integer.valueOf(add_stock);
+		String new_stock_str = String.valueOf(new_stock);
+		
+		invItemObj.setStock(new_stock_str);
+		repo.save(invItemObj);
+		return true;
+	}
+	
+	@PostMapping("/cutstock")
+	public Boolean cutstock(@Valid @RequestBody Map<String, Object> obj) {
+		InventoryItem invItemObj = new InventoryItem();
+		String productId =   (String) obj.get("productId");
+		String inventoryId =   (String) obj.get("inventoryId");
+		invItemObj = repo.findItem(productId, inventoryId);
+		
+		String current_stock = invItemObj.getStock();
+		String add_stock = (String) obj.get("cutStock");
+		int new_stock = Integer.valueOf(current_stock) - Integer.valueOf(add_stock);
+		String new_stock_str = String.valueOf(new_stock);
+		
+		invItemObj.setStock(new_stock_str);
+		repo.save(invItemObj);
 		return true;
 	}
 }
