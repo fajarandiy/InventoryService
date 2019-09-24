@@ -11,14 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.inventory.models.Inventory;
 import com.example.demo.inventory.models.InventoryItem;
 import com.example.demo.inventory.repositories.InventoryItemRepository;
+import com.example.demo.inventory.repositories.InventoryRepository;
 
 @RestController
 @RequestMapping("api/inventoryItem")
 public class InventoryItemController {
 	@Autowired
 	private InventoryItemRepository repo;
+	
+	@Autowired
+	private InventoryRepository inventoryRepo;
 	
 	@PostMapping("/create")
 	public String createInventoryItem(@Valid @RequestBody InventoryItem obj) {
@@ -36,7 +41,8 @@ public class InventoryItemController {
 		InventoryItem invItemObj = new InventoryItem();
 		String productId =   (String) obj.get("productId");
 		String inventoryId =   (String) obj.get("inventoryId");
-		invItemObj = repo.findItem(productId, inventoryId);
+		Inventory inv = inventoryRepo.findById(Integer.valueOf(inventoryId)).get();
+		invItemObj = repo.findItem(productId, inv);
 		
 		String current_stock = invItemObj.getStock();
 		String add_stock = (String) obj.get("addStock");
@@ -53,7 +59,9 @@ public class InventoryItemController {
 		InventoryItem invItemObj = new InventoryItem();
 		String productId =   (String) obj.get("productId");
 		String inventoryId =   (String) obj.get("inventoryId");
-		invItemObj = repo.findItem(productId, inventoryId);
+		Inventory inv = inventoryRepo.findById(Integer.valueOf(inventoryId)).get();
+		invItemObj = repo.findItem(productId, inv);
+//		invItemObj = repo.findItem(productId, inventoryId);
 		
 		String current_stock = invItemObj.getStock();
 		String add_stock = (String) obj.get("cutStock");

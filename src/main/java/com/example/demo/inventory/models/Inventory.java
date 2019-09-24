@@ -2,6 +2,7 @@ package com.example.demo.inventory.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +17,11 @@ public class Inventory {
 	private String name;
 	private String address;
 	
-	@OneToMany( targetEntity=InventoryItem.class )
+	@OneToMany(
+	        mappedBy = "inventory",
+	        cascade = CascadeType.ALL,
+	        orphanRemoval = true
+	)
     private List<InventoryItem> stocks;
 	
 	public int getId() {

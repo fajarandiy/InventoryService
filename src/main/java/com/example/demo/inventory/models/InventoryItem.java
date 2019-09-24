@@ -1,16 +1,26 @@
 package com.example.demo.inventory.models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class InventoryItem {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
-	private String inventoryId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_id", nullable = true)
+	@JsonIgnore
+	private Inventory inventory;
+	
 	private String productId;
 	private String stock;
 	private Double basePrice;
@@ -21,11 +31,11 @@ public class InventoryItem {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getInventoryId() {
-		return inventoryId;
+	public Inventory getInventory() {
+		return inventory;
 	}
-	public void setInventoryId(String inventoryId) {
-		this.inventoryId = inventoryId;
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
 	}
 	public String getProductId() {
 		return productId;

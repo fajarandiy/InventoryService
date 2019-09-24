@@ -1,6 +1,7 @@
 package com.example.demo.inventory.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.inventory.models.Inventory;
 import com.example.demo.inventory.models.InventoryItem;
+import com.example.demo.inventory.repositories.InventoryItemRepository;
 import com.example.demo.inventory.repositories.InventoryRepository;
 
 @RestController
@@ -22,6 +25,9 @@ public class InventoryController {
 		@Autowired
 		private InventoryRepository repo;
 		
+		@Autowired
+		private InventoryItemRepository itemRepo;
+		
 		@PostMapping("/create")
 		public String create(@Valid @RequestBody Inventory obj) {
 			repo.save(obj);
@@ -29,23 +35,29 @@ public class InventoryController {
 			return "success create";
 		}
 		
-		@PostMapping("/update/{action}") //add or remove
-		public String update(@Valid @RequestBody Inventory obj, @Valid @PathVariable(value="action") String action) {
-			Inventory newInventory = repo.findById(obj.getId()).get();
+		@PostMapping("/update/{id}") //add or remove
+		public String update(@Valid @RequestBody List<InventoryItem> obj, @Valid @PathVariable(value="id") int id, @Valid @RequestParam(value="action") String action) {
+			Optional<Inventory> opt = repo.findById(id);
 
-			if(newInventory != null) {
-				List<InventoryItem> newList = newInventory.getStocks();
+			if(opt.isPresent()) {
+				Inventory inv = opt.get();
 				if("add".equals(action)) {
-					newList.addAll(obj.getStocks());
+					for(InventoryItem inventoryItem : obj) {
+						inventoryItem.setInventory(inv);
+						itemRepo.save(inventoryItem);
+					}
 				} else if("remove".equals(action)){
-					newList.remove(obj.getStocks());
+					for(InventoryItem inventoryItem : obj) {
+						inventoryItem.setInventory(null);
+						itemRepo.save(inventoryItem);
+					}
 				}
-				newInventory.setStocks(newList);
-				repo.save(newInventory);
+				
+				repo.save(inv);
 				
 				return "success update";
 			} else {
-				return "failed update";
+				return "update failed, data not found";
 			}
 			
 		}
@@ -60,7 +72,7 @@ public class InventoryController {
 			return repo.findById(id).get();
 		}
 		
-		@GetMapping("/getId/{id}/getStocks")
+		@GetMapping("/getId/{id}/stocks")
 		public List<InventoryItem> getStocks(@Valid @PathVariable(value="id") int id) {
 			return repo.findById(id).get().getStocks();
 		}
