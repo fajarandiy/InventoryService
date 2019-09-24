@@ -34,8 +34,13 @@ public class InventoryController {
 		}
 		
 		@GetMapping("/getname/{name}")
-		public Inventory getName(@Valid @PathVariable(value="name") Integer name) {
-			return repo.findById(name).get();
+		public List<Inventory> getName(@Valid @PathVariable(value="name") String name) {
+			return repo.findByName(name);
+		}
+		
+		@GetMapping("/getaddress/{address}")
+		public List<Inventory> getAddress(@Valid @PathVariable(value="address") String address) {
+			return repo.findByAddress(address);
 		}
 		
 }
