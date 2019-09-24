@@ -21,12 +21,18 @@ public class InventoryItemController {
 	@PostMapping("/create")
 	public String createInventoryItem(@Valid @RequestBody InventoryItem obj) {
 		repo.save(obj);
-		
 		return "success create";
 	}
 	
 	@GetMapping("/getall")
 	public Iterable<InventoryItem> getAll() {
 		return repo.findAll();
+	}
+	
+	@PostMapping("/restock")
+	public Boolean restock(@Valid @RequestBody InventoryItem obj) {
+		repo.findById(obj.getId());
+		
+		return true;
 	}
 }
