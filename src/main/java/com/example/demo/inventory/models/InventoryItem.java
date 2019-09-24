@@ -13,7 +13,7 @@ public class InventoryItem {
 	private String inventoryId;
 	private String productId;
 	private String stock;
-	private String basePrice;
+	private Double basePrice;
 	private String updateStockDate; //yyyymmdd
 	public int getId() {
 		return id;
@@ -39,10 +39,11 @@ public class InventoryItem {
 	public void setStock(String stock) {
 		this.stock = stock;
 	}
-	public String getBasePrice() {
+
+	public Double getBasePrice() {
 		return basePrice;
 	}
-	public void setBasePrice(String basePrice) {
+	public void setBasePrice(Double basePrice) {
 		this.basePrice = basePrice;
 	}
 	public String getUpdateStockDate() {
