@@ -37,7 +37,7 @@ public class Inventory {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public void stocks(List<InventoryItem> stocks) {
+	public void setStocks(List<InventoryItem> stocks) {
 		this.stocks = stocks;
 	}
 	public List<InventoryItem> getStocks() {

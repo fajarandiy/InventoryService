@@ -14,4 +14,5 @@ public interface InventoryRepository extends CrudRepository<Inventory, Integer>{
 
 	@Query("select a from Inventory a where a.address like concat('%', :address, '%')")
 	List<Inventory> findByAddress(@Param("address") String address);
+	
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.inventory.models.Inventory;
+import com.example.demo.inventory.models.InventoryItem;
 import com.example.demo.inventory.repositories.InventoryRepository;
 
 @RestController
@@ -28,17 +29,48 @@ public class InventoryController {
 			return "success create";
 		}
 		
-		@GetMapping("/getall")
+		@PostMapping("/update/{action}") //add or remove
+		public String update(@Valid @RequestBody Inventory obj, @Valid @PathVariable(value="action") String action) {
+			Inventory newInventory = repo.findById(obj.getId()).get();
+
+			if(newInventory != null) {
+				List<InventoryItem> newList = newInventory.getStocks();
+				if("add".equals(action)) {
+					newList.addAll(obj.getStocks());
+				} else if("remove".equals(action)){
+					newList.remove(obj.getStocks());
+				}
+				newInventory.setStocks(newList);
+				repo.save(newInventory);
+				
+				return "success update";
+			} else {
+				return "failed update";
+			}
+			
+		}
+		
+		@GetMapping("/getAll")
 		public Iterable<Inventory> getAll() {
 			return repo.findAll();
 		}
 		
-		@GetMapping("/getname/{name}")
+		@GetMapping("/getId/{id}")
+		public Inventory getId(@Valid @PathVariable(value="id") int id) {
+			return repo.findById(id).get();
+		}
+		
+		@GetMapping("/getId/{id}/getStocks")
+		public List<InventoryItem> getStocks(@Valid @PathVariable(value="id") int id) {
+			return repo.findById(id).get().getStocks();
+		}
+		
+		@GetMapping("/getName/{name}")
 		public List<Inventory> getName(@Valid @PathVariable(value="name") String name) {
 			return repo.findByName(name);
 		}
 		
-		@GetMapping("/getaddress/{address}")
+		@GetMapping("/getAddress/{address}")
 		public List<Inventory> getAddress(@Valid @PathVariable(value="address") String address) {
 			return repo.findByAddress(address);
 		}
